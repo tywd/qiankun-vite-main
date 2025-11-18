@@ -1,17 +1,3 @@
-# 主应用路由配置
-
-主应用的路由配置基于 Vue Router，同时需要考虑与子应用的集成。
-
-## 路由配置文件
-
-主应用的路由配置位于 [router/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/router/index.ts) 文件中。
-
-### 基础路由配置
-
-```typescript
-import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
-
 // 主应用路由
 const routes: RouteRecordRaw[] = [
   {
@@ -39,7 +25,7 @@ export default router
 
 ## 子应用路由配置
 
-子应用路由配置在 [utils/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/utils/index.ts) 中定义：
+子应用路由配置在 [utils/index.ts](/src/utils/index.ts) 中定义：
 
 ```typescript
 // 获取子应用路由(如果加了新的子应用，需要在主应用此处注册好新的子应用路由信息)
@@ -59,15 +45,12 @@ export const getSubRoute = () => {
 
 ### 路由转换函数
 
-在 [utils/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/utils/index.ts) 中提供了路由转换函数：
+在 [utils/index.ts](/src/utils/index.ts) 中提供了路由转换函数：
 
 ```typescript
 // 处理原始route路径为 vue-router可用的格式
-export const transformRoutes = (routes: any[]): any[] => {
-    // 使用 import.meta.glob 预加载所有视图组件，避免动态导入路径问题
-    const viewModules = import.meta.glob('@/views/**/*.vue');
-
-    const newRoutes: any[] = routes.map(route => {
+export const transformRoutes = (routes: any[]): RouteRecordRaw[] => {
+    const newRoutes: RouteRecordRaw[] = routes.map((route: any) => {
         const transformd: any = {
             path: route.path,
             name: route.name,
@@ -76,12 +59,9 @@ export const transformRoutes = (routes: any[]): any[] => {
         if (route.children && route.children.length > 0) {
             transformd.children = transformRoutes(route.children);
         } else {
-            // 检查组件是否存在
-            if (viewModules[`/src/views${route.path}.vue`]) {
-                transformd.component = viewModules[`/src/views${route.path}.vue`];
-            } else {
-                // 如果组件不存在，提供一个默认组件并添加错误处理
-                transformd.component = () => import('@/views/index.vue').catch(() => {
+            if (route.component) {
+                // 动态导入组件
+                transformd.component = () => import(`@/views${route.component}`).catch(() => {
                     return Promise.resolve({
                         template: '<div>页面开发中...</div>'
                     });
@@ -95,8 +75,6 @@ export const transformRoutes = (routes: any[]): any[] => {
 ```
 
 ## 路由守卫
-
-主应用可以配置路由守卫来实现权限控制等功能：
 
 ```typescript
 // 路由前置守卫
@@ -114,8 +92,6 @@ router.beforeEach((to, from, next) => {
 
 ## 动态路由
 
-主应用支持动态添加路由，这对于根据用户权限动态加载菜单非常有用：
-
 ```typescript
 // 动态添加路由
 router.addRoute({
@@ -127,8 +103,8 @@ router.addRoute({
 
 ## 路由最佳实践
 
-1. **路由懒加载**：使用动态导入实现路由组件的懒加载
-2. **路由元信息**：通过 meta 字段存储路由相关信息（如标题、权限等）
-3. **路由参数**：合理使用路由参数和查询参数
-4. **路由守卫**：使用路由守卫实现权限控制和页面访问控制
-5. **路由命名**：为路由命名以便于程序化导航
+1. **路由懒加载**：使用动态导入实现路由组件的懒加载，提升应用性能
+2. **路由元信息**：通过 meta 字段存储路由相关信息，如标题、权限等
+3. **路由守卫**：实现完善的路由守卫机制，确保应用安全性
+4. **路由命名**：使用有意义的路由名称，便于维护和理解
+5. **路由参数**：合理使用路由参数和查询参数，确保数据传递的正确性

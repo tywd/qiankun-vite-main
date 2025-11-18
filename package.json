@@ -9,7 +9,10 @@
     "preview": "vite preview --port 8080",
     "clean": "rm -rf dist node_modules/.vite",
     "vercel-build": "pnpm install && pnpm build",
-    "build:analyze": "vite build --mode analyze"
+    "build:analyze": "vite build --mode analyze",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",

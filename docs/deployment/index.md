@@ -1,0 +1,95 @@
+# 部署指南
+
+本指南将详细介绍如何将主应用和子应用部署到 Vercel 平台。
+
+## 部署架构
+
+本项目采用微前端架构，包含一个主应用和多个子应用，它们可以独立部署到 Vercel。
+
+### 部署策略
+
+1. **独立部署**：主应用和子应用分别部署到不同的 Vercel 项目
+2. **环境配置**：通过环境变量配置不同环境的参数
+3. **路由映射**：通过主应用路由配置将子应用集成到主应用中
+
+## 部署准备
+
+### 1. Vercel 账户
+
+确保您拥有 Vercel 账户，如果没有，请访问 [Vercel官网](https://vercel.com/) 注册。
+
+### 2. GitHub 集成
+
+将您的项目推送到 GitHub，并在 Vercel 中集成 GitHub 账户。
+
+### 3. 项目创建
+
+在 Vercel 中为每个应用创建独立的项目：
+
+1. 主应用项目
+2. 每个子应用项目
+
+## 部署配置
+
+### 1. 环境变量配置
+
+在 Vercel 项目设置中配置必要的环境变量：
+
+**主应用环境变量：**
+- `VITE_USER_MANAGEMENT_URL`: 用户管理子应用的 URL
+- `VITE_SYSTEM_MANAGEMENT_URL`: 系统管理子应用的 URL
+
+**子应用环境变量：**
+- `BASE_PATH`: 子应用的基础路径，必须与主应用中配置的 `activeRule` 一致
+
+### 2. 构建配置
+
+确保每个应用的 [package.json](/package.json) 中包含正确的构建脚本：
+
+```json
+{
+  "scripts": {
+    "build": "vite build",
+    "vercel-build": "pnpm install && pnpm build"
+  }
+}
+```
+
+### 3. Vercel 配置文件
+
+每个应用根目录下需要包含 [vercel.json](/vercel.json) 配置文件：
+
+```json
+{
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "headers": {
+        "cache-control": "public,max-age=31536000,immutable"
+      },
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
+```
+
+## 部署步骤
+
+详细的部署步骤请参考以下文档：
+
+- [部署概述](./overview.md): qiankun-vite 微前端项目的完整部署流程
+- [Vercel 部署](./vercel.md): 详细介绍如何在 Vercel 上部署主应用和子应用
+- [主子应用独立部署](./independent.md): 介绍主应用和子应用的独立部署配置

@@ -18,7 +18,7 @@
 
 ### 1. 微应用容器
 
-在 [SubApp.vue](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/components/SubApp.vue) 组件中实现了微应用的加载和容器管理：
+在 [SubApp.vue](/src/components/SubApp.vue) 组件中实现了微应用的加载和容器管理：
 
 ```vue
 <template>
@@ -36,7 +36,7 @@
 
 ### 2. 微应用注册
 
-在 [micro/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/micro/index.ts) 中实现微应用的注册：
+在 [micro/index.ts](/src/micro/index.ts) 中实现微应用的注册：
 
 ```typescript
 // 注册微应用
@@ -53,7 +53,7 @@ export function registerApps() {
 
 ### 3. 子应用配置
 
-在 [utils/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/utils/index.ts) 中配置子应用信息：
+在 [utils/index.ts](/src/utils/index.ts) 中配置子应用信息：
 
 ```typescript
 export const getSubApp = () => {

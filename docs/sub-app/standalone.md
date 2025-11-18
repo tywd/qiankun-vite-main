@@ -8,7 +8,7 @@
 
 在子应用中需要检测当前运行环境，以决定使用哪种挂载方式：
 
-```typescript
+```
 // micro/index.ts
 import { qiankunWindow } from 'vite-plugin-qiankun/dist/helper'
 
@@ -18,7 +18,7 @@ export const isQiankunEnv = qiankunWindow.__POWERED_BY_QIANKUN__;
 
 ### 2. 挂载逻辑
 
-在 [main.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/src/main.ts) 中实现兼容两种环境的挂载逻辑：
+在 [main.ts](/src/main.ts) 中实现兼容两种环境的挂载逻辑：
 
 ```typescript
 function initApp(props: any = {}) {
@@ -57,13 +57,15 @@ function initApp(props: any = {}) {
 if (!isQiankunEnv) {
   initApp()
 }
+
 ```
+
 
 ### 3. 路由配置
 
-在 [router/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/src/router/index.ts) 中根据环境配置不同的基础路径：
+在 [router/index.ts](/src/router/index.ts) 中根据环境配置不同的基础路径：
 
-```typescript
+```
 import { createRouter, createWebHistory } from 'vue-router'
 import { isQiankunEnv } from '@/micro'
 
@@ -73,29 +75,31 @@ const router = createRouter({
 })
 
 export default router
+
 ```
+
 
 ## 独立运行开发
 
 ### 1. 启动命令
 
-在子应用的 [package.json](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/package.json) 中配置开发启动命令：
+在子应用的 [package.json](/package.json) 中配置开发启动命令：
 
-```json
-{
+```
   "scripts": {
     "dev": "vite --port 8082 --host",
     "build": "vue-tsc && vite build",
     "preview": "vite preview --port 8082"
   }
-}
+
 ```
+
 
 ### 2. 开发环境配置
 
-在 [vite.config.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/vite.config.ts) 中配置开发服务器：
+在 [vite.config.ts](/vite.config.ts) 中配置开发服务器：
 
-```typescript
+```
 export default defineConfig({
   server: {
     port: 8082,
@@ -108,10 +112,11 @@ export default defineConfig({
         rewrite: (path: string) => path.replace(/^\/api/, '')
       }
     }
-  },
+  }
   // 其他配置...
-})
+
 ```
+
 
 ## 独立运行测试
 
@@ -119,7 +124,7 @@ export default defineConfig({
 
 子应用可以独立进行单元测试，不需要依赖主应用：
 
-```typescript
+```
 // 示例测试文件
 import { mount } from '@vue/test-utils'
 import MyComponent from '@/components/MyComponent.vue'
@@ -130,13 +135,15 @@ describe('MyComponent', () => {
     expect(wrapper.text()).toContain('Hello')
   })
 })
+
 ```
+
 
 ### 2. 端到端测试
 
 子应用可以独立进行端到端测试：
 
-```javascript
+```
 // cypress 测试示例
 describe('子应用测试', () => {
   it('should display welcome message', () => {
@@ -144,15 +151,17 @@ describe('子应用测试', () => {
     cy.contains('h1', 'Welcome')
   })
 })
+
 ```
+
 
 ## 独立运行部署
 
 ### 1. 构建配置
 
-在 [vite.config.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/vite.config.ts) 中配置构建选项：
+在 [vite.config.ts](/vite.config.ts) 中配置构建选项：
 
-```typescript
+```
 export default defineConfig({
   build: {
     outDir: 'dist',
@@ -164,14 +173,16 @@ export default defineConfig({
           'element-vendor': ['element-plus', '@element-plus/icons-vue'],
         }
       }
-    },
+    }
     cssCodeSplit: true,
     chunkSizeWarningLimit: 500,
     sourcemap: false,
     minify: 'terser'
   }
 })
+
 ```
+
 
 ### 2. 部署配置
 
@@ -183,29 +194,32 @@ export default defineConfig({
 
 确保子应用在不同环境中都能正常运行：
 
-```typescript
+```
 // 根据环境配置不同的API地址
 const API_BASE_URL = isQiankunEnv 
   ? '/api'  // 微前端环境下使用主应用的代理
   : 'http://localhost:3000/api'  // 独立运行时使用完整地址
 ```
 
+
 ### 2. 样式隔离
 
 在独立运行时确保样式不会影响其他应用：
 
-```scss
+```
 // 使用命名空间避免样式冲突
 .my-sub-app {
   // 子应用样式
 }
+
 ```
+
 
 ### 3. 全局变量管理
 
 避免在独立运行时污染全局作用域：
 
-```typescript
+```
 // 使用模块作用域变量而不是全局变量
 const appState = {
   // 应用状态
@@ -215,13 +229,15 @@ const appState = {
 window.appState = {
   // 避免这样做
 }
+
 ```
+
 
 ### 4. 错误处理
 
 在独立运行时提供友好的错误提示：
 
-```typescript
+```
 if (!isQiankunEnv) {
   // 独立运行时的错误处理
   window.addEventListener('error', (event) => {
@@ -229,7 +245,9 @@ if (!isQiankunEnv) {
     // 显示用户友好的错误页面
   })
 }
+
 ```
+
 
 ## 调试技巧
 

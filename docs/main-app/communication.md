@@ -6,7 +6,7 @@
 
 ### 1. Props 传递
 
-主应用通过 props 向子应用传递数据，在 [utils/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/utils/index.ts) 中配置：
+主应用通过 props 向子应用传递数据，在 [utils/index.ts](/src/utils/index.ts) 中配置：
 
 ```typescript
 export const getSubApp = () => {
@@ -27,7 +27,7 @@ export const getSubApp = () => {
 };
 ```
 
-子应用在 [main.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/src/main.ts) 中接收 props：
+子应用在 [main.ts](/src/main.ts) 中接收 props：
 
 ```typescript
 function initApp(props: any = {}) {
@@ -44,7 +44,7 @@ function initApp(props: any = {}) {
 
 使用 Qiankun 提供的全局状态管理功能实现主子应用间的状态同步。
 
-在主应用的 [micro/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/micro/index.ts) 中初始化全局状态：
+在主应用的 [micro/index.ts](/src/micro/index.ts) 中初始化全局状态：
 
 ```typescript
 const { onGlobalStateChange, setGlobalState } = initGlobalState({
@@ -67,7 +67,7 @@ const { onGlobalStateChange, setGlobalState } = getMasterOptions() || {};
 
 通过自定义事件总线实现主子应用间的通信。
 
-在主应用的 [shared/eventBus.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/shared/eventBus.ts) 中实现事件总线：
+在主应用的 [shared/eventBus.ts](/src/shared/eventBus.ts) 中实现事件总线：
 
 ```typescript
 class EventBus {

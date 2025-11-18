@@ -20,7 +20,7 @@ pnpm add vite-plugin-qiankun
 
 ### 2. 配置 Vite
 
-在子应用的 [vite.config.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/vite.config.ts) 中添加 Qiankun 插件：
+在子应用的 [vite.config.ts](/vite.config.ts) 中添加 Qiankun 插件：
 
 ```typescript
 import { defineConfig } from 'vite'
@@ -41,7 +41,7 @@ export default defineConfig({
 
 ### 3. 实现生命周期函数
 
-在子应用的 [main.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/src/main.ts) 中实现 Qiankun 生命周期函数：
+在子应用的 [main.ts](/src/main.ts) 中实现 Qiankun 生命周期函数：
 
 ```typescript
 import { renderWithQiankun } from 'vite-plugin-qiankun/dist/helper'
@@ -90,7 +90,7 @@ renderWithQiankun({
 
 ### 4. 配置微前端环境检测
 
-在子应用的 [micro/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/src/micro/index.ts) 中实现微前端环境检测：
+在子应用的 [micro/index.ts](/src/micro/index.ts) 中实现微前端环境检测：
 
 ```typescript
 import { qiankunWindow } from 'vite-plugin-qiankun/dist/helper'
@@ -101,7 +101,7 @@ export const isQiankunEnv = qiankunWindow.__POWERED_BY_QIANKUN__;
 
 ### 5. 配置路由
 
-在子应用的 [router/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/src/router/index.ts) 中根据环境配置路由基础路径：
+在子应用的 [router/index.ts](/src/router/index.ts) 中根据环境配置路由基础路径：
 
 ```typescript
 import { createRouter, createWebHistory } from 'vue-router'
@@ -117,7 +117,7 @@ export default router
 
 ## 主应用配置
 
-在主应用中注册子应用，需要在 [utils/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/utils/index.ts) 中添加子应用配置：
+在主应用中注册子应用，需要在 [utils/index.ts](/src/utils/index.ts) 中添加子应用配置：
 
 ```typescript
 export const getSubApp = () => {

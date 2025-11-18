@@ -57,7 +57,7 @@ update() {
 
 ## 完整实现示例
 
-在子应用的 [main.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/src/main.ts) 中完整实现生命周期函数：
+在子应用的 [main.ts](/src/main.ts) 中完整实现生命周期函数：
 
 ```typescript
 import { createApp } from 'vue'

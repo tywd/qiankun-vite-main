@@ -6,6 +6,8 @@
 
 本项目是一个基于 Vite 构建的微前端架构示例，使用 Qiankun 作为微前端框架，实现了主应用与子应用的集成。
 
+自用的微前端解决方案，一个主应用基座，可以理解为一个壳应用，基于 Qiankun + Vue3 + Vite + TypeScript 构建的微前端解决方案。用于学习Vite、Qiankun从0开发搭建一个项目（自身学习使用）
+
 ### 技术栈
 
 - 主应用：Vue 3 + Vite + TypeScript

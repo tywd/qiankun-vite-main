@@ -4,7 +4,7 @@
 
 ## 微应用注册
 
-在 [main.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/main.ts) 中，主应用在路由就绪后进行微应用注册：
+在 [main.ts](/src/main.ts) 中，主应用在路由就绪后进行微应用注册：
 
 ```typescript
 // 等待路由就绪后进行微前端初始化（但不立即启动）
@@ -19,9 +19,8 @@ router.isReady().then(() => {
   
   console.log('微前端配置初始化完成，等待用户访问时启动')
 })
-```
 
-注册逻辑在 [micro/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/micro/index.ts) 中实现：
+注册逻辑在 [micro/index.ts](/src/micro/index.ts) 中实现：
 
 ```typescript
 // 注册微应用
@@ -53,11 +52,10 @@ export function registerApps() {
     }
   })
 }
-```
 
 ## 微应用启动
 
-微应用的启动采用按需启动方式，在 [SubApp.vue](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/components/SubApp.vue) 组件中实现：
+微应用的启动采用按需启动方式，在 [SubApp.vue](/src/components/SubApp.vue) 组件中实现：
 
 ```typescript
 onMounted(async () => {
@@ -84,9 +82,8 @@ onMounted(async () => {
     loading.value = false
   }
 })
-```
 
-按需启动逻辑在 [micro/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/micro/index.ts) 中实现：
+按需启动逻辑在 [micro/index.ts](/src/micro/index.ts) 中实现：
 
 ```typescript
 // 全局标记，确保qiankun只启动一次
@@ -141,7 +138,6 @@ export function startMicroAppsOnDemand() {
     }
   })
 }
-```
 
 ## 错误处理
 
@@ -158,7 +154,6 @@ export function setupErrorHandler() {
     // 这里可以添加错误上报逻辑
   })
 }
-```
 
 ## 生命周期最佳实践
 

@@ -1,6 +1,6 @@
-# 微前端项目 Vercel 部署总结
+# 部署概述
 
-本文档总结了如何将 qiankun-vite 微前端项目（包括主应用和子应用）部署到 Vercel 的完整流程。
+本指南将详细介绍如何将 qiankun-vite 微前端项目（包括主应用和子应用）部署到 Vercel 的完整流程。
 
 ## 项目结构
 
@@ -46,7 +46,7 @@ project-root/
 
 ### 4. 更新主应用中的子应用配置
 
-在主应用的 [/src/utils/index.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/src/utils/index.ts) 文件中，将子应用的 entry 配置更新为实际的 Vercel 部署地址：
+在主应用的 [/src/utils/index.ts](/src/utils/index.ts) 文件中，将子应用的 entry 配置更新为实际的 Vercel 部署地址：
 
 ```typescript
 export const getSubApp = () => {
@@ -93,25 +93,25 @@ GitHub Actions 工作流会自动处理以下步骤：
 
 ### 主应用关键配置
 
-1. **GitHub Actions**: [.github/workflows/deploy-vercel.yml](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/.github/workflows/deploy-vercel.yml)
+1. **GitHub Actions**: [.github/workflows/deploy-vercel.yml](/.github/workflows/deploy-vercel.yml)
    - 配置了主应用和子应用的并行部署
    - 使用 Secrets 进行身份验证
 
-2. **Vercel 配置**: [vercel.json](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/vercel.json)
+2. **Vercel 配置**: [vercel.json](/vercel.json)
    - 配置了静态文件构建和路由规则
 
-3. **Vite 配置**: [vite.config.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/vite.config.ts)
+3. **Vite 配置**: [vite.config.ts](/vite.config.ts)
    - 配置了构建输出目录和资源目录
 
 ### 子应用关键配置
 
-1. **GitHub Actions**: [.github/workflows/deploy-vercel.yml](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/.github/workflows/deploy-vercel.yml)
+1. **GitHub Actions**: [.github/workflows/deploy-vercel.yml](/.github/workflows/deploy-vercel.yml)
    - 配置了子应用的独立部署流程
 
-2. **Vercel 配置**: [vercel.json](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/vercel.json)
+2. **Vercel 配置**: [vercel.json](/vercel.json)
    - 配置了静态文件构建和路由规则
 
-3. **Vite 配置**: [vite.config.ts](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/vite.config.ts)
+3. **Vite 配置**: [vite.config.ts](/vite.config.ts)
    - 配置了基础路径，确保在 Vercel 上正确部署
 
 ## 常见问题和解决方案
@@ -152,7 +152,7 @@ GitHub Actions 工作流会自动处理以下步骤：
 
 ## 参考文档
 
-- [主应用详细部署说明](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-main/DEPLOYMENT.md)
-- [子应用详细部署说明](file:///Users/shichuyu/Desktop/web/qoder/qiankun-vite-sub/DEPLOYMENT.md)
+- [Vercel 部署](./vercel.md): 详细介绍如何在 Vercel 上部署主应用和子应用
+- [主子应用独立部署](./independent.md): 介绍主应用和子应用的独立部署配置
 - [Vercel 官方文档](https://vercel.com/docs)
 - [GitHub Actions 官方文档](https://docs.github.com/en/actions)
