@@ -9,6 +9,8 @@ on:
       - main
 
 jobs:
+  # 注意：如果主应用和子应用在不同的GitHub仓库中，
+  # 子应用的部署应该在其自己的仓库中配置，这里仅保留主应用的部署配置
   deploy-main-app:
     runs-on: ubuntu-latest
     
@@ -51,6 +53,45 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
 
-  # 注意：如果主应用和子应用在不同的GitHub仓库中，
-  # 子应用的部署应该在其自己的仓库中配置
-  # 这里仅保留主应用的部署配置
+  deploy-docs:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build documentation
+        run: pnpm docs:build
+
+      - name: Deploy Documentation to Vercel (Preview)
+        if: github.event_name == 'pull_request'
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_DOCS_PROJECT_ID }}
+          vercel-args: '--dir=docs/.vitepress/dist'
+
+      - name: Deploy Documentation to Vercel (Production)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_DOCS_PROJECT_ID }}
+          vercel-args: '--dir=docs/.vitepress/dist --prod'

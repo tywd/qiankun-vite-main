@@ -110,6 +110,7 @@ export default defineConfig({
   base: base, // 设置基础路径，确保在Vercel上正确部署
   // 其他配置...
 })
+```
 
 ### 4. 路由配置
 
@@ -122,7 +123,7 @@ import { isQiankunEnv } from '@/micro'
 const router = createRouter({
   history: createWebHistory(isQiankunEnv ? process.env.BASE_PATH || '/' : '/'),
   routes
-```
+})
 
 export default router
 ```
@@ -210,7 +211,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
-[package.json](/package.json)
+```
 
 **子应用工作流 (.github/workflows/deploy-sub.yml)：**
 
@@ -266,7 +267,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_SUB_PROJECT_ID }}
           vercel-args: '--prod'
-[package.json](/package.json)
+```
 
 ### Secrets 配置
 

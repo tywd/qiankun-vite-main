@@ -121,16 +121,80 @@ export default router
 
 ```typescript
 export const getSubApp = () => {
+    // 在生产环境中使用 Vercel 部署地址，开发环境中使用本地地址
+    const isProd = process.env.NODE_ENV === 'production';
+    const subAppEntry = isProd 
+        ? 'https://your-sub-app.vercel.app' // 替换为实际的 Vercel 部署地址
+        : 'http://localhost:8082';
+
     return [
         {
-            name: '子应用名称',
-            entry: '子应用入口地址', // 例如：http://localhost:8082 或 https://your-sub-app.vercel.app
-            container: '#micro-app-container',
-            activeRule: '/子应用激活路径', // 例如：/qiankun-vite-sub
+            name: '子应用', // 子应用名称
+            entry: subAppEntry, // 子应用入口
+            container: '#micro-app-container', // 挂载容器
+            activeRule: '/qiankun-vite-sub', // 激活路由
             props: {
-                routerBase: '/子应用激活路径',
+                routerBase: '/qiankun-vite-sub',
                 mainAppInfo: {
-                    name: '主应用传递给子应用的信息'
+                    name: '主应用的全局参数传给子应用'
+                }
+            }
+        }
+    ]
+};
+```
+
+## 子应用独立部署
+
+子应用可以独立部署到 Vercel 平台，具体步骤如下：
+
+### 1. 创建 Vercel 项目
+
+1. 在 Vercel 控制台点击 "New Project"
+2. 选择子应用的 GitHub 仓库
+3. 设置项目名称（例如：qiankun-vite-sub）
+4. 保留其他默认设置
+
+### 2. 配置环境变量
+
+在子应用的 Vercel 项目设置中配置环境变量：
+
+1. 进入项目设置页面
+2. 选择 "Environment Variables" 选项卡
+3. 添加以下环境变量：
+   - `BASE_PATH`: /qiankun-vite-sub (需要与主应用中配置的 activeRule 保持一致)
+
+### 3. 部署子应用
+
+1. 在 Vercel 项目页面点击 "Deploy"
+2. 等待构建和部署完成
+3. 记录部署地址
+
+### 4. 更新主应用配置
+
+部署完成后，需要更新主应用中子应用的配置信息：
+
+1. 打开主应用的 [utils/index.ts](/src/utils/index.ts) 文件
+2. 将子应用的 entry 配置更新为实际的 Vercel 部署地址：
+
+```typescript
+export const getSubApp = () => {
+    // 在生产环境中使用 Vercel 部署地址，开发环境中使用本地地址
+    const isProd = process.env.NODE_ENV === 'production';
+    const subAppEntry = isProd 
+        ? 'https://your-actual-sub-app.vercel.app' // 替换为实际的 Vercel 部署地址
+        : 'http://localhost:8082';
+
+    return [
+        {
+            name: '子应用', // 子应用名称
+            entry: subAppEntry, // 子应用入口
+            container: '#micro-app-container', // 挂载容器
+            activeRule: '/qiankun-vite-sub', // 激活路由
+            props: {
+                routerBase: '/qiankun-vite-sub',
+                mainAppInfo: {
+                    name: '主应用的全局参数传给子应用'
                 }
             }
         }
@@ -145,3 +209,4 @@ export const getSubApp = () => {
 3. **资源路径**：确保子应用的资源路径正确
 4. **样式隔离**：注意主应用与子应用之间的样式隔离
 5. **状态管理**：合理使用全局状态管理，确保主子应用状态同步
+6. **部署配置**：子应用部署时需要正确配置 BASE_PATH 环境变量
