@@ -7,8 +7,6 @@ export default defineConfig({
   plugins: [vue()],
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-    'process.env.VITE_USER_MANAGEMENT_URL': JSON.stringify(process.env.VITE_USER_MANAGEMENT_URL),
-    'process.env.VITE_SYSTEM_MANAGEMENT_URL': JSON.stringify(process.env.VITE_SYSTEM_MANAGEMENT_URL),
     'process.env.VITE_SUB_APP_URL': JSON.stringify(process.env.VITE_SUB_APP_URL)
   },
   server: {
@@ -20,6 +18,11 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
+      },
+      '/sub-app/assets': {
+        target: 'https://qiankun-vite-sub.vercel.app',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/sub-app/, '')
       }
     }
   },
