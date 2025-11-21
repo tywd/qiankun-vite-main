@@ -91,10 +91,11 @@ const toggleSidebar = () => {
 .subapp-container {
     width: 100%;
     height: 100%;
+    overflow: hidden;
 
-    // 子应用样式隔离
+    // 移除样式隔离，让子应用样式正常应用
     :deep(*) {
-        font-family: inherit;
+        // 不要覆盖子应用的样式
     }
 }
 </style>
