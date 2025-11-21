@@ -99,14 +99,14 @@ export const getSubApp = () => {
     const isProd = process.env.NODE_ENV === 'production';
     const subAppEntry = isProd 
         ? 'https://your-sub-app.vercel.app' // 替换为实际的 Vercel 部署地址
-        : 'http://localhost:8082';
+        : 'http://localhost:8081';
 
     return [
         {
             name: '子应用', // 子应用名称
             entry: subAppEntry, // 子应用入口
             container: '#micro-app-container', // 挂载容器
-            activeRule: '/qiankun-vite-sub', // 激活路由
+            activeRule: '/sub-app', // 激活路由
             props: {
                 // setGlobalState,
                 mainAppInfo: {
@@ -122,7 +122,7 @@ export const getSubApp = () => {
 export const getSubRoute = () => {
     return [
         {
-            path: '/qiankun-vite-sub/:path(.*)*',
+            path: '/sub-app/:path(.*)*',
             name: 'subApp',
             component: () => import('@/components/SubApp.vue'),
             meta: { title: '子应用' }
