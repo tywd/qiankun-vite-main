@@ -75,20 +75,17 @@
 
 ```typescript
 export const getSubApp = () => {
-    // 在生产环境中使用 Vercel 部署地址，开发环境中使用本地地址
-    const isProd = process.env.NODE_ENV === 'production';
-    const subAppEntry = isProd 
-        ? 'https://your-actual-sub-app.vercel.app' // 替换为实际的 Vercel 部署地址
-        : 'http://localhost:8082';
+    // 从环境变量获取子应用入口地址，如果没有则使用默认值
+    const subAppEntry = process.env.VITE_SUB_APP_URL || 'https://qiankun-vite-sub.vercel.app';
 
     return [
         {
             name: '子应用', // 子应用名称
             entry: subAppEntry, // 子应用入口
             container: '#micro-app-container', // 挂载容器
-            activeRule: '/qiankun-vite-sub', // 激活路由
+            activeRule: '/sub-app', // 激活路由
             props: {
-                routerBase: '/qiankun-vite-sub',
+                routerBase: '/sub-app',
                 mainAppInfo: {
                     name: '主应用的全局参数传给子应用'
                 }
@@ -97,6 +94,28 @@ export const getSubApp = () => {
     ]
 };
 ```
+
+## Vercel 环境变量配置
+
+为了安全和灵活性，建议将敏感配置信息通过 Vercel 的环境变量功能进行管理，而不是硬编码在代码中。
+
+### 主应用环境变量配置
+
+在主应用的 Vercel 项目设置中配置以下环境变量：
+
+1. 进入项目设置页面
+2. 选择 "Environment Variables" 选项卡
+3. 添加以下环境变量：
+   - `VITE_SUB_APP_URL`: 子应用的部署地址 (例如: https://qiankun-vite-sub.vercel.app)
+
+### 子应用环境变量配置
+
+在子应用的 Vercel 项目设置中配置以下环境变量：
+
+1. 进入项目设置页面
+2. 选择 "Environment Variables" 选项卡
+3. 添加以下环境变量：
+   - `BASE_PATH`: /sub-app (需要与主应用中配置的 activeRule 保持一致)
 
 ## GitHub Actions 自动化部署
 

@@ -40,7 +40,8 @@ export default defineConfig({
           items: [
             { text: '部署概述', link: '/deployment/overview' },
             { text: 'Vercel 部署', link: '/deployment/vercel' },
-            { text: '主子应用独立部署', link: '/deployment/independent' }
+            { text: '主子应用独立部署', link: '/deployment/independent' },
+            { text: '部署检查清单', link: '/deployment/checklist' }
           ]
         }
       ]

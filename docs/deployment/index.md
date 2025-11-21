@@ -36,11 +36,12 @@
 在 Vercel 项目设置中配置必要的环境变量：
 
 **主应用环境变量：**
-- `VITE_USER_MANAGEMENT_URL`: 用户管理子应用的 URL
-- `VITE_SYSTEM_MANAGEMENT_URL`: 系统管理子应用的 URL
+- `VITE_SUB_APP_URL`: 子应用的部署地址 (例如: https://qiankun-vite-sub.vercel.app)
 
 **子应用环境变量：**
 - `BASE_PATH`: 子应用的基础路径，必须与主应用中配置的 `activeRule` 一致
+
+为了安全和灵活性，建议将敏感配置信息通过 Vercel 的环境变量功能进行管理，而不是硬编码在代码中。这样可以避免将敏感信息提交到代码仓库中。
 
 ### 2. 构建配置
 
