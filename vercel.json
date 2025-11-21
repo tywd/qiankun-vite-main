@@ -11,7 +11,7 @@
   "routes": [
     {
       "src": "/sub-app/assets/(.*)",
-      "dest": "/sub-app/assets/$1"
+      "dest": "https://qiankun-vite-sub.vercel.app/assets/$1"
     },
     {
       "src": "/assets/(.*)",

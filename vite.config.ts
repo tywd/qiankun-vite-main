@@ -19,11 +19,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },
-      '/sub-app/assets': {
-        target: 'https://qiankun-vite-sub.vercel.app',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/sub-app/, '')
-      }
+      // '/sub-app/assets': {
+      //   target: 'https://qiankun-vite-sub.vercel.app',
+      //   changeOrigin: true,
+      //   rewrite: (path) => path.replace(/^\/sub-app/, '')
+      // }
     }
   },
   resolve: {
