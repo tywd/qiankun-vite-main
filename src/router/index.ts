@@ -44,7 +44,14 @@ const baseRoutes: RouteRecordRaw[] = [
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     redirect: '/dashboard'
-  }
+  },
+  // 添加测试组件路由
+  {
+    path: '/test',
+    name: 'test',
+    component: () => import('@/components/TestComponent.vue'),
+    meta: { title: '样式测试' }
+  },
 ]
 
 

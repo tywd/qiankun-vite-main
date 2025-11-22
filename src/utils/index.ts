@@ -88,6 +88,16 @@ export const getMainRoute = () => {
                     meta: { title: '子应用申请' }
                 }
             ]
+        },
+        // 添加测试组件菜单项
+        {
+            id: 'test',
+            title: '样式测试',
+            name: 'test',
+            icon: 'Test',
+            level: 1,
+            path: '/test',
+            meta: { title: '样式测试' }
         }
     ]
 }
@@ -150,7 +160,7 @@ export const transformRoutes = (routes: any[]): any[] => {
                 transformd.component = viewModules[`/src/views${route.path}.vue`];
             } else {
                 // 如果组件不存在，提供一个默认组件并添加错误处理
-                transformd.component = () => import('@/views/index.vue').catch(() => {
+                transformd.component = () => import('../views/index.vue').catch(() => {
                     return Promise.resolve({
                         template: '<div>页面开发中...</div>'
                     });

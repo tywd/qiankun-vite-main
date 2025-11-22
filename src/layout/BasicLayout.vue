@@ -1,5 +1,5 @@
 <template>
-    <div class="basic-layout">
+    <div class="main-app basic-layout">
         <!-- 顶部Header -->
         <Header />
 
@@ -51,6 +51,9 @@ const toggleSidebar = () => {
     display: flex;
     flex-direction: column;
     background-color: #f0f2f5;
+}
+
+.main-app {
 
     .main-content-area {
         flex: 1;
