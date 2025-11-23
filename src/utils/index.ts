@@ -128,6 +128,12 @@ export const getSubApp = () => {
     ]
 };
 
+// 添加一个新函数用于获取子应用的基础路径
+export const getSubAppBasePath = () => {
+    const isProd = process.env.NODE_ENV === 'production';
+    return isProd ? '/sub-app/' : '/';
+};
+
 // TODO
 // 获取子应用路由(如果加了新的子应用，需要在主应用此处注册好新的子应用路由信息)
 export const getSubRoute = () => {
