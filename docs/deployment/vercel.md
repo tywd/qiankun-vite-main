@@ -70,7 +70,7 @@
 
 部署完成后，需要更新主应用中子应用的配置信息：
 
-1. 打开主应用的 [utils/index.ts](/src/utils/index.ts) 文件
+1. 打开主应用的 [utils/index.ts](../../src/utils/index.ts) 文件
 2. 将子应用的 entry 配置更新为实际的 Vercel 部署地址：
 
 ```typescript
@@ -119,7 +119,7 @@ export const getSubApp = () => {
 
 ## GitHub Actions 自动化部署
 
-项目已配置 GitHub Actions 实现自动化部署，您可以在 `.github/workflows/deploy-vercel.yml` 文件中查看配置。
+项目已配置 GitHub Actions 实现自动化部署，您可以在 [.github/workflows/deploy-vercel.yml](../../.github/workflows/deploy-vercel.yml) 文件中查看配置。
 
 ### 配置 Secrets
 

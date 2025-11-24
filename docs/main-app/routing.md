@@ -1,110 +1,80 @@
-// 主应用路由
-const routes: RouteRecordRaw[] = [
-  {
-    path: '/',
-    redirect: '/dashboard'
-  },
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    component: () => import('@/views/index.vue'),
-    meta: { title: '首页' }
-  }
-]
+# 主应用路由配置
 
-// 合并主应用路由和子应用路由
-const allRoutes = [...routes, ...getSubRoute()]
+主应用的路由配置基于 Vue Router，同时需要为子应用提供路由占位符。
 
-const router = createRouter({
-  history: createWebHistory('/'),
-  routes: allRoutes
-})
+## 路由结构
 
-export default router
-```
+主应用的路由分为两部分：
 
-## 子应用路由配置
+1. **主应用路由**：处理主应用自身的页面路由
+2. **子应用路由**：为子应用提供路由占位符
 
-子应用路由配置在 [utils/index.ts](/src/utils/index.ts) 中定义：
+## 路由配置文件
+
+主应用的路由配置在 [router/index.ts](../../src/router/index.ts) 文件中。
+
+子应用路由配置在 [utils/index.ts](../../src/utils/index.ts) 中定义：
 
 ```typescript
-// 获取子应用路由(如果加了新的子应用，需要在主应用此处注册好新的子应用路由信息)
+// 子应用路由占位符
 export const getSubRoute = () => {
-    return [
-        {
-            path: '/qiankun-vite-sub/:path(.*)*',
-            name: 'subApp',
-            component: () => import('@/components/SubApp.vue'),
-            meta: { title: '子应用' }
-        }
-    ]
+  return [
+    {
+      path: '/qiankun-vite-sub/:path(.*)*',
+      name: 'subApp',
+      component: () => import('@/components/SubApp.vue'),
+      meta: { title: '子应用' }
+    }
+  ]
 }
 ```
 
-## 路由工具函数
-
-### 路由转换函数
-
-在 [utils/index.ts](/src/utils/index.ts) 中提供了路由转换函数：
+在 [utils/index.ts](../../src/utils/index.ts) 中提供了路由转换函数：
 
 ```typescript
 // 处理原始route路径为 vue-router可用的格式
-export const transformRoutes = (routes: any[]): RouteRecordRaw[] => {
-    const newRoutes: RouteRecordRaw[] = routes.map((route: any) => {
-        const transformd: any = {
-            path: route.path,
-            name: route.name,
-            meta: route.meta
-        }
-        if (route.children && route.children.length > 0) {
-            transformd.children = transformRoutes(route.children);
-        } else {
-            if (route.component) {
-                // 动态导入组件
-                transformd.component = () => import(`@/views${route.component}`).catch(() => {
-                    return Promise.resolve({
-                        template: '<div>页面开发中...</div>'
-                    });
-                });
-            }
-        }
-        return transformd;
-    })
-    return newRoutes;
+export const transformRoutes = (routes: any[]): any[] => {
+  // 使用 import.meta.glob 预加载所有视图组件，避免动态导入路径问题
+  const viewModules = import.meta.glob('@/views/**/*.vue');
+
+  const newRoutes: any[] = routes.map(route => {
+    const transformd: any = {
+      path: route.path,
+      name: route.name,
+      meta: route.meta
+    }
+    // ... 路由转换逻辑
+  })
+  return newRoutes;
 }
+```
+
+## 路由整合
+
+在主应用的路由配置中，将主应用路由和子应用路由进行整合：
+
+```typescript
+// 主应用其他可变动路由
+const _routes: any[] = getMainRoute()
+const mainRoutes: RouteRecordRaw[] = transformRoutes(_routes);
+// 子应用路由，子应用会挂载到这个路由下
+const subRoutes: RouteRecordRaw[] = getSubRoute();
+const routes: RouteRecordRaw[] = [...baseRoutes, ...mainRoutes, ...subRoutes];
 ```
 
 ## 路由守卫
 
+主应用通过路由守卫来处理主应用和子应用的激活状态：
+
 ```typescript
-// 路由前置守卫
-router.beforeEach((to, from, next) => {
-  // 权限检查逻辑
-  const isAuthenticated = checkAuth()
-  
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login')
+router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+  // 判断是主应用路由还是子应用路由
+  const mainRoutes: string[] = ['/dashboard', '/user-center', '/system', '/child']
+  if (mainRoutes.some(route => to.path.startsWith(route))) {
+    // 激活主应用
   } else {
-    next()
+    // 激活子应用
   }
+  next()
 })
 ```
-
-## 动态路由
-
-```typescript
-// 动态添加路由
-router.addRoute({
-  path: '/dynamic',
-  name: 'dynamic',
-  component: () => import('@/views/dynamic.vue')
-})
-```
-
-## 路由最佳实践
-
-1. **路由懒加载**：使用动态导入实现路由组件的懒加载，提升应用性能
-2. **路由元信息**：通过 meta 字段存储路由相关信息，如标题、权限等
-3. **路由守卫**：实现完善的路由守卫机制，确保应用安全性
-4. **路由命名**：使用有意义的路由名称，便于维护和理解
-5. **路由参数**：合理使用路由参数和查询参数，确保数据传递的正确性

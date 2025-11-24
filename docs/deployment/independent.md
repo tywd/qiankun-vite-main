@@ -1,75 +1,36 @@
 # 主子应用独立部署
 
-本指南介绍主应用和子应用的独立部署配置，适用于主应用和子应用位于不同仓库的情况。
+主应用和子应用可以独立部署到不同的服务器或平台上。
 
-## 独立部署架构
+## 部署架构
 
-在独立部署架构中，主应用和子应用分别部署到不同的 Vercel 项目，它们之间通过配置进行集成。
+```
+主应用服务器 (https://main-app.com)
+│
+├── 主应用静态资源
+└── API服务
 
-### 部署优势
-
-1. **独立开发**：主应用和子应用可以独立开发和测试
-2. **独立部署**：每个应用可以独立部署，互不影响
-3. **灵活扩展**：可以根据需要独立扩展各个应用
-4. **团队协作**：不同团队可以负责不同的应用
-
-## 主应用独立部署
-
-### 1. 项目配置
-
-确保主应用项目包含以下配置文件：
-
-1. [package.json](/package.json)：包含构建脚本
-2. [vercel.json](/vercel.json)：Vercel 配置文件
-3. [vite.config.ts](/vite.config.ts)：Vite 配置文件
-
-### 2. 环境变量
-
-在主应用的 Vercel 项目设置中配置环境变量：
-
-```bash
-VITE_USER_MANAGEMENT_URL=https://user-management.vercel.app
-VITE_SYSTEM_MANAGEMENT_URL=https://system-management.vercel.app
+子应用服务器 (https://sub-app.com)
+│
+└── 子应用静态资源
 ```
 
-### 3. 子应用配置
+## 主应用配置
 
-在主应用的 [utils/index.ts](/src/utils/index.ts) 中配置子应用信息：
+在主应用的 [utils/index.ts](../../src/utils/index.ts) 中配置子应用信息：
 
 ```typescript
 export const getSubApp = () => {
-    // 在生产环境中使用 Vercel 部署地址，开发环境中使用本地地址
-    const isProd = process.env.NODE_ENV === 'production';
-    const userManagementEntry = isProd 
-        ? process.env.VITE_USER_MANAGEMENT_URL || 'https://user-management.vercel.app'
-        : 'http://localhost:8082';
-        
-    const systemManagementEntry = isProd 
-        ? process.env.VITE_SYSTEM_MANAGEMENT_URL || 'https://system-management.vercel.app'
-        : 'http://localhost:8083';
-
     return [
         {
-            name: '用户管理',
-            entry: userManagementEntry,
+            name: '子应用',
+            entry: 'https://sub-app.com',  // 子应用部署地址
             container: '#micro-app-container',
-            activeRule: '/user-management',
+            activeRule: '/sub-app',
             props: {
-                routerBase: '/user-management',
+                routerBase: '/sub-app',
                 mainAppInfo: {
-                    name: '主应用传递给用户管理子应用的信息'
-                }
-            }
-        },
-        {
-            name: '系统管理',
-            entry: systemManagementEntry,
-            container: '#micro-app-container',
-            activeRule: '/system-management',
-            props: {
-                routerBase: '/system-management',
-                mainAppInfo: {
-                    name: '主应用传递给系统管理子应用的信息'
+                    name: '主应用的全局参数传给子应用'
                 }
             }
         }
@@ -77,252 +38,169 @@ export const getSubApp = () => {
 };
 ```
 
-## 子应用独立部署
+## 子应用配置
 
-### 1. 项目配置
+### 路由配置
 
-确保子应用项目包含以下配置文件：
-
-1. [package.json](/package.json)：包含构建脚本
-2. [vercel.json](/vercel.json)：Vercel 配置文件
-3. [vite.config.ts](/vite.config.ts)：Vite 配置文件
-
-### 2. 环境变量
-
-在子应用的 Vercel 项目设置中配置环境变量：
-
-```bash
-BASE_PATH=/user-management
-```
-
-注意：`BASE_PATH` 的值必须与主应用中配置的 `activeRule` 保持一致。
-
-### 3. Vite 配置
-
-在子应用的 [vite.config.ts](/vite.config.ts) 中配置基础路径：
+在子应用的 [router/index.ts](../../src/router/index.ts) 中配置路由基础路径：
 
 ```typescript
-// 获取基础路径，Vercel部署时使用环境变量，本地开发时使用默认值
-const base = process.env.BASE_PATH || '/';
-
-// https://vite.dev/config/
-export default defineConfig({
-  base: base, // 设置基础路径，确保在Vercel上正确部署
-  // 其他配置...
-})
-```
-
-### 4. 路由配置
-
-在子应用的 [router/index.ts](/src/router/index.ts) 中配置路由基础路径：
-
-```typescript
-import { createRouter, createWebHistory } from 'vue-router'
-import { isQiankunEnv } from '@/micro'
+import { baseUrl } from '@/micro';
 
 const router = createRouter({
-  history: createWebHistory(isQiankunEnv ? process.env.BASE_PATH || '/' : '/'),
+  history: createWebHistory(baseUrl),
   routes
+});
+```
+
+### 环境变量
+
+在子应用的 .env.production 文件中配置基础路径：
+
+```bash
+BASE_PATH=/sub-app
+```
+
+### Vite配置
+
+在子应用的 vite.config.ts 中使用环境变量：
+
+```typescript
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  const basePath = env.BASE_PATH || '/';
+  
+  return {
+    base: basePath,
+    // 其他配置...
+  }
 })
-
-export default router
 ```
 
-## 部署流程
+## 部署步骤
 
-### 1. 主应用部署流程
+### 1. 构建主应用
 
-1. 将主应用代码推送到 GitHub 仓库
-2. 在 Vercel 中创建新项目并连接到主应用仓库
-3. 配置环境变量
-4. 触发部署
-5. 记录主应用的部署地址
+```bash
+cd qiankun-vite-main
+pnpm install
+pnpm build
+```
 
-### 2. 子应用部署流程
+### 2. 构建子应用
 
-1. 将子应用代码推送到 GitHub 仓库
-2. 在 Vercel 中创建新项目并连接到子应用仓库
-3. 配置环境变量（特别是 BASE_PATH）
-4. 触发部署
-5. 记录子应用的部署地址
+```bash
+cd qiankun-vite-sub
+pnpm install
+pnpm build
+```
 
-### 3. 集成配置
+### 3. 部署主应用
 
-1. 更新主应用中子应用的 entry 配置为实际的 Vercel 部署地址
-2. 重新部署主应用以应用更改
+将主应用的 dist 目录部署到服务器：
 
-## 自动化部署
+```bash
+# 示例：部署到Nginx
+cp -r dist/* /var/www/main-app/
+```
 
-### GitHub Actions 配置
+### 4. 部署子应用
 
-为每个应用配置独立的 GitHub Actions 工作流：
+将子应用的 dist 目录部署到服务器：
 
-**主应用工作流 (.github/workflows/deploy-main.yml)：**
+```bash
+# 示例：部署到Nginx
+cp -r dist/* /var/www/sub-app/
+```
 
-```yaml
-name: Deploy Main App to Vercel
+## Nginx配置示例
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+### 主应用Nginx配置
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+```nginx
+server {
+    listen 80;
+    server_name main-app.com;
     
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build project
-        run: pnpm build
-
-      - name: Deploy to Vercel (Preview)
-        if: github.event_name == 'pull_request'
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-
-      - name: Deploy to Vercel (Production)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-```
-
-**子应用工作流 (.github/workflows/deploy-sub.yml)：**
-
-```yaml
-name: Deploy Sub App to Vercel
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+    location / {
+        root /var/www/main-app;
+        try_files $uri $uri/ /index.html;
+    }
     
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build project
-        run: pnpm build
-
-      - name: Deploy to Vercel (Preview)
-        if: github.event_name == 'pull_request'
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_SUB_PROJECT_ID }}
-
-      - name: Deploy to Vercel (Production)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_SUB_PROJECT_ID }}
-          vercel-args: '--prod'
+    location /api {
+        proxy_pass http://backend-server;
+    }
+}
 ```
 
-### Secrets 配置
+### 子应用Nginx配置
 
-在每个 GitHub 仓库中配置相应的 Secrets：
+```nginx
+server {
+    listen 80;
+    server_name sub-app.com;
+    
+    location / {
+        root /var/www/sub-app;
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
 
-**主应用仓库 Secrets：**
-- `VERCEL_TOKEN`: Vercel 访问令牌
-- `VERCEL_ORG_ID`: Vercel 组织 ID
-- `VERCEL_PROJECT_ID`: 主应用的 Vercel 项目 ID
+## 跨域配置
 
-**子应用仓库 Secrets：**
-- `VERCEL_TOKEN`: Vercel 访问令牌
-- `VERCEL_ORG_ID`: Vercel 组织 ID
-- `VERCEL_SUB_PROJECT_ID`: 子应用的 Vercel 项目 ID
+如果主应用和子应用部署在不同域名下，需要配置跨域支持。
 
-## 验证部署
+### 子应用跨域配置
 
-### 1. 独立验证
+在子应用的 vite.config.ts 中配置：
 
-1. 访问主应用部署地址，确认主应用正常运行
-2. 访问子应用部署地址，确认子应用可以独立运行
+```typescript
+export default defineConfig({
+  server: {
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    }
+  }
+})
+```
 
-### 2. 集成验证
+## 常见问题
 
-1. 在主应用中导航到子应用路由
-2. 确认子应用正确加载和显示
-3. 检查主子应用间的通信是否正常
+### 1. 子应用资源加载失败
 
-### 3. 错误排查
+**问题**: 控制台报错 "Failed to load module script"
 
-1. 检查浏览器控制台错误信息
-2. 检查网络请求是否正常
-3. 确认环境变量配置是否正确
-4. 验证路由配置是否正确
+**解决方案**:
+1. 检查子应用服务器是否正确配置CORS头
+2. 确认子应用的Vite配置中添加了跨域支持
+3. 检查网络请求是否被浏览器阻止
+
+### 2. 样式隔离问题
+
+**问题**: 主应用和子应用样式相互影响
+
+**解决方案**:
+1. 在主应用中启用Qiankun的样式隔离
+2. 子应用使用CSS Modules或BEM命名规范
+3. 为主应用和子应用添加不同的CSS命名空间
+
+### 3. 路由问题
+
+**问题**: 页面刷新后出现404错误
+
+**解决方案**:
+1. 确保Nginx配置了正确的try_files规则
+2. 检查路由配置是否正确
+3. 确认服务器支持SPA应用的路由模式
 
 ## 最佳实践
 
-### 1. 版本管理
-
-1. 为主应用和子应用分别维护版本号
-2. 在配置中记录版本信息，便于问题排查
-
-### 2. 配置管理
-
-1. 使用环境变量管理不同环境的配置
-2. 避免在代码中硬编码部署地址
-
-### 3. 监控和日志
-
-1. 实现应用性能监控
-2. 记录关键操作日志
-3. 设置错误告警机制
-
-### 4. 安全性
-
-1. 保护敏感信息，如 API 密钥
-2. 实现适当的访问控制
-3. 定期更新依赖包
+1. **域名规划**: 合理规划主应用和子应用的域名
+2. **版本管理**: 建立完善的版本管理机制
+3. **监控告警**: 部署监控系统，及时发现和解决问题
+4. **备份策略**: 制定数据备份和恢复策略
+5. **安全防护**: 配置SSL证书，加强安全防护
