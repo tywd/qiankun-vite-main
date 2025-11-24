@@ -89,7 +89,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_DOCS_PROJECT_ID }}
-          vercel-args: '--dir=docs/.vitepress/dist'
+          vercel-args: '--prod'
+        env:
+          VERCEL_PROJECT_DIR: docs/.vitepress/dist
 
       - name: Deploy Documentation to Vercel (Production)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -98,4 +100,6 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_DOCS_PROJECT_ID }}
-          vercel-args: '--dir=docs/.vitepress/dist --prod'
+          vercel-args: '--prod'
+        env:
+          VERCEL_PROJECT_DIR: docs/.vitepress/dist
